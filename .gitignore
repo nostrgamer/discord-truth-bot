@@ -33,10 +33,21 @@ ENV/
 
 # Environment variables
 .env
+.env.local
+.env.*.local
+!.env.example
+discord_bot/.env
+discord_bot/.env.local
+discord_bot/.env.*.local
 
 # Logs
 *.log
+logs/
 
 # OS
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Project specific
+discord_bot/__pycache__/
+discord_bot/*.pyc 

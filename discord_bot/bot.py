@@ -3,6 +3,7 @@ import discord
 import logging
 import asyncio
 from dotenv import load_dotenv
+from .config import config
 
 # Configure logging
 logging.basicConfig(
@@ -23,12 +24,12 @@ intents.messages = True
 class MyBot(discord.Client):
     async def on_ready(self):
         """Called when the bot is ready and connected to Discord."""
-        logger.info(f'Logged in as {self.user.name}')
-        logger.info(f'Bot ID: {self.user.id}')
-        logger.info('------')
+        config.logger.info(f'Logged in as {self.user.name}')
+        config.logger.info(f'Bot ID: {self.user.id}')
+        config.logger.info('------')
         # Print all servers the bot is in
         for guild in self.guilds:
-            logger.info(f'Bot is in server: {guild.name}')
+            config.logger.info(f'Bot is in server: {guild.name}')
             # Send a message to each server with instructions
             try:
                 channel = guild.system_channel or next((c for c in guild.text_channels if c.permissions_for(guild.me).send_messages), None)
@@ -44,10 +45,10 @@ class MyBot(discord.Client):
 
     async def on_message(self, message):
         """Handle all messages."""
-        logger.info(f"Received message: {message.content}")
+        config.logger.info(f"Received message: {message.content}")
         
         if message.author == self.user:
-            logger.info("Ignoring own message")
+            config.logger.info("Ignoring own message")
             return
         
         # Check for both user and role mentions
@@ -56,30 +57,30 @@ class MyBot(discord.Client):
         
         # Log the mention that was received
         if message.content.startswith('<@'):
-            logger.info(f"Received mention with ID: {message.content.split('>')[0][2:]}")
+            config.logger.info(f"Received mention with ID: {message.content.split('>')[0][2:]}")
         
         if message.content.startswith(bot_mention) or message.content.startswith(role_mention):
             # Remove both types of mentions and get the command
             command = message.content.replace(bot_mention, '').replace(role_mention, '').strip().lower()
-            logger.info(f"Processing command: {command}")
+            config.logger.info(f"Processing command: {command}")
             
             if command == 'ping':
-                logger.info("Executing ping command")
+                config.logger.info("Executing ping command")
                 latency = round(self.latency * 1000)
                 response = f"🏓 Pong! Latency: {latency}ms"
                 await message.channel.send(response)
-                logger.info("Ping command completed")
+                config.logger.info("Ping command completed")
             
             elif command == 'help':
-                logger.info("Executing help command")
+                config.logger.info("Executing help command")
                 response = (
                     "**Available Commands:**\n"
                     f"`{bot_mention} ping` - Check my latency\n"
                     f"`{bot_mention} help` - Show available commands"
                 )
                 await message.channel.send(response)
-                logger.info("Help command completed")
+                config.logger.info("Help command completed")
 
 # Create and run the bot
 bot = MyBot(intents=intents)
-bot.run(DISCORD_TOKEN) 
+bot.run(config.discord_token) 
