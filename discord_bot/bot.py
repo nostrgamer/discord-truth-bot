@@ -6,10 +6,14 @@ from dotenv import load_dotenv
 from .config import config
 from discord.ext import commands
 
+# Ensure logs directory exists
+os.makedirs("logs", exist_ok=True)
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename='logs/bot.log'
 )
 logger = logging.getLogger(__name__)
 
@@ -34,6 +38,7 @@ class TruthBot(commands.Bot):
         await self.load_extension("discord_bot.commands.truth_profile")
         await self.load_extension("discord_bot.commands.truth_posts")
         await self.load_extension("discord_bot.commands.filter_posts")
+        await self.load_extension("discord_bot.commands.monitor_posts")
         await self.load_extension("discord_bot.commands.help")
         
     async def on_ready(self):
@@ -66,6 +71,14 @@ class TruthBot(commands.Bot):
                         value=f"`{BOT_PREFIX}filter-posts @username [keywords] [days]` - Filter posts by keywords and date range\n"
                               f"• Use quotes for phrases: `{BOT_PREFIX}filter-posts @user \"election fraud\" 7`\n"
                               f"• Or separate keywords: `{BOT_PREFIX}filter-posts @user election fraud 7`",
+                        inline=False
+                    )
+                    
+                    embed.add_field(
+                        name="Post Monitoring",
+                        value=f"`{BOT_PREFIX}monitor-posts @username keyword` - Monitor for new posts containing a keyword\n"
+                              f"`{BOT_PREFIX}stop-monitoring` - Stop monitoring posts\n"
+                              f"`{BOT_PREFIX}monitoring-status` - Check current monitoring status",
                         inline=False
                     )
                     
