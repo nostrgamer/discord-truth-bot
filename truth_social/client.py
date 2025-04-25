@@ -83,12 +83,25 @@ class TruthSocialClient:
         if not results:
             raise ApifyError(f"No posts found for username: {username}")
             
+        # Get the profile data from the first result
+        profile_data = results[0]['account']
+        author = UserProfile(
+            username=profile_data['username'],
+            display_name=profile_data['display_name'],
+            bio=profile_data.get('note', '').replace('<p>', '').replace('</p>', ''),
+            followers_count=profile_data['followers_count'],
+            following_count=profile_data['following_count'],
+            posts_count=profile_data['statuses_count'],
+            created_at=datetime.fromisoformat(profile_data['created_at']),
+            is_verified=profile_data['verified']
+        )
+            
         posts = []
         for post_data in results:
             post = Post(
                 id=post_data['id'],
                 content=post_data['content'],
-                author=await self.get_user_profile(username),  # We already have this data
+                author=author,  # Use the same author profile for all posts
                 created_at=datetime.fromisoformat(post_data['created_at']),
                 likes_count=post_data['favourites_count'],
                 replies_count=post_data['replies_count'],
