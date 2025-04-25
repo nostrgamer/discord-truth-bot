@@ -33,6 +33,8 @@ class TruthBot(commands.Bot):
         # Load command cogs
         await self.load_extension("discord_bot.commands.truth_profile")
         await self.load_extension("discord_bot.commands.truth_posts")
+        await self.load_extension("discord_bot.commands.filter_posts")
+        await self.load_extension("discord_bot.commands.help")
         
     async def on_ready(self):
         """Called when the bot is ready and connected to Discord."""
@@ -46,17 +48,38 @@ class TruthBot(commands.Bot):
             try:
                 channel = guild.system_channel or next((c for c in guild.text_channels if c.permissions_for(guild.me).send_messages), None)
                 if channel:
-                    await channel.send(
-                        f"**Truth Social Bot is online!**\n"
-                        f"Available commands:\n"
-                        f"`{BOT_PREFIX}ping` - Check bot latency\n"
-                        f"`{BOT_PREFIX}help` - Show this help message\n"
-                        f"`{BOT_PREFIX}truth-profile @username` - Get Truth Social profile\n"
-                        f"`{BOT_PREFIX}truth-posts @username` - Get 5 most recent posts\n\n"
-                        f"Examples:\n"
-                        f"`{BOT_PREFIX}truth-profile @realDonaldTrump` - Get profile\n"
-                        f"`{BOT_PREFIX}truth-posts @realDonaldTrump` - Get 5 recent posts"
+                    embed = discord.Embed(
+                        title="Truth Social Bot",
+                        description="Thanks for adding me! Here are the available commands:",
+                        color=discord.Color.blue()
                     )
+                    
+                    # Add command information
+                    embed.add_field(
+                        name="Profile Information",
+                        value=f"`{BOT_PREFIX}profile @username` - View a user's profile information",
+                        inline=False
+                    )
+                    
+                    embed.add_field(
+                        name="Post Filtering",
+                        value=f"`{BOT_PREFIX}filter-posts @username [keywords] [days]` - Filter posts by keywords and date range\n"
+                              f"• Use quotes for phrases: `{BOT_PREFIX}filter-posts @user \"election fraud\" 7`\n"
+                              f"• Or separate keywords: `{BOT_PREFIX}filter-posts @user election fraud 7`",
+                        inline=False
+                    )
+                    
+                    embed.add_field(
+                        name="Help",
+                        value=f"`{BOT_PREFIX}help` - Show all commands\n"
+                              f"`{BOT_PREFIX}help <command>` - Show detailed help for a specific command",
+                        inline=False
+                    )
+                    
+                    # Add footer
+                    embed.set_footer(text=f"Use {BOT_PREFIX}help for more information")
+                    
+                    await channel.send(embed=embed)
             except Exception as e:
                 logger.error(f"Could not send message to {guild.name}: {e}")
 
