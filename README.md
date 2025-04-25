@@ -11,22 +11,23 @@ A Discord bot that monitors and forwards posts from Truth Social to Discord chan
 ## Project Structure
 ```
 discord-truth-bot/
-├── bot.py              # Main bot file
-├── commands/           # Bot commands
-│   └── ping.py        # Example ping command
-├── .env.example       # Environment variables template
-├── requirements.txt   # Python dependencies
-└── README.md         # Project documentation
+├── discord_bot/           # Discord bot implementation
+│   ├── bot.py            # Main bot file
+│   ├── commands/         # Bot commands
+│   │   └── ping.py      # Example ping command
+│   └── .env             # Environment variables
+├── requirements.txt      # Python dependencies
+└── README.md            # Project documentation
 ```
 
 ## Setup
 1. Clone the repository
 2. Install dependencies: `pip install -r requirements.txt`
-3. Copy `.env.example` to `.env` and fill in your Discord bot token
-4. Run the bot: `python bot.py`
+3. Copy `.env.example` to `discord_bot/.env` and fill in your Discord bot token
+4. Run the bot: `python discord_bot/bot.py`
 
 ## Configuration
-Create a `.env` file with the following variables:
+Create a `discord_bot/.env` file with the following variables:
 ```
 DISCORD_TOKEN=your_discord_bot_token
 LOG_LEVEL=INFO
