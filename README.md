@@ -1,110 +1,69 @@
-# Discord Bot
+# Discord Truth Social Bot
 
-A Discord bot that responds to user commands and provides basic functionality, including Truth Social integration.
+A Discord bot that integrates with Truth Social to fetch and monitor posts.
 
 ## Features
 
-- Mention-based command system
-- Ping command to check bot latency
-- Help command to list available commands
-- Configurable logging
-- Secure token handling
-- Truth Social integration via Apify
-  - User profile lookup
-  - Post fetching
-  - Engagement metrics
+- Fetch user profiles
+- Filter posts by keywords and date range
+- Monitor posts for specific keywords
+- Automatic notifications for new matching posts
 
-## Prerequisites
+## Commands
 
-- Python 3.8 or higher
-- Discord Bot Token
-- Apify API Token
-- Discord.py library
-- python-dotenv library
-- apify-client library
+### Profile Information
+- `!tprofile @username` - View a user's profile information
 
-## Installation
+### Post Filtering
+- `!tfilter-posts @username [keywords] [days]` - Filter posts by keywords and date range
+  - Use quotes for phrases: `!tfilter-posts @user "election fraud" 7`
+  - Or separate keywords: `!tfilter-posts @user election fraud 7`
+  - Default to 7 days if not specified
+  - Maximum 30 days lookback period
+  - Maximum 5 results per search
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/discord-bot.git
-cd discord-bot
-```
+### Post Monitoring
+- `!tmonitor-posts @username keyword` - Start monitoring for posts containing a keyword
+  - Example: `!tmonitor-posts @realDonaldTrump election`
+  - Checks every 5 minutes for new posts
+  - Sends notifications when matching posts are found
+- `!tstop-monitoring` - Stop monitoring posts
+- `!tmonitoring-status` - Check current monitoring status
 
-2. Create and activate a virtual environment:
-```bash
-python -m venv venv
-# On Windows
-venv\Scripts\activate
-# On Unix or MacOS
-source venv/bin/activate
-```
+### Help
+- `!thelp` - Show all commands
+- `!thelp <command>` - Show detailed help for a specific command
 
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+## Rate Limits
+- Maximum 5 results per search
+- 30 second cooldown between searches
+- Maximum 20 searches per hour
+- Maximum 30 days lookback period
+- One active monitoring configuration at a time
 
-4. Create a `.env` file:
-```bash
-cp .env.example .env
-```
+## Setup
 
-5. Edit the `.env` file with your tokens:
-```env
-# Discord Configuration
-DISCORD_TOKEN=your_discord_bot_token_here
-BOT_PREFIX=!t
-LOG_LEVEL=INFO
-LOG_FILE=bot.log
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Create a `.env` file with:
+   ```
+   DISCORD_TOKEN=your_discord_bot_token
+   BOT_PREFIX=!t
+   APIFY_API_TOKEN=your_apify_api_token
+   ```
+4. Run the bot:
+   ```bash
+   python -m discord_bot.bot
+   ```
 
-# Apify Configuration
-APIFY_API_TOKEN=your_apify_api_token_here
-APIFY_ACTOR_ID=muhammetakkurtt/truth-social-scraper
-```
-
-## Configuration
-
-The bot can be configured through environment variables in the `.env` file:
-
-### Discord Configuration
-- `DISCORD_TOKEN`: Your Discord bot token (required)
-- `BOT_PREFIX`: Command prefix (default: '!t')
-- `LOG_LEVEL`: Logging level (default: 'INFO')
-- `LOG_FILE`: Log file name (default: 'bot.log')
-
-### Apify Configuration
-- `APIFY_API_TOKEN`: Your Apify API token (required for Truth Social integration)
-- `APIFY_ACTOR_ID`: The Apify actor ID for Truth Social scraping (default: muhammetakkurtt/truth-social-scraper)
-
-## Usage
-
-1. Start the bot:
-```bash
-python -m discord_bot.bot
-```
-
-2. In Discord, use these commands:
-- `@BotName ping` - Check bot latency
-- `@BotName help` - Show available commands
-- `@BotName truth profile @username` - Get Truth Social profile
-- `@BotName truth posts @username` - Get recent Truth Social posts
-
-## Security
-
-- Never commit your `.env` file
-- Keep your Discord bot token and Apify API token secure
-- The `.env.example` file shows required variables without actual values
-- API tokens should be rotated if exposed
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+## Requirements
+- Python 3.8+
+- discord.py
+- python-dotenv
+- apify-client
 
 ## License
-
-This project is licensed under the MIT License - see the LICENSE file for details. 
+MIT 
