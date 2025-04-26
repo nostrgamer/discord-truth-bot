@@ -62,7 +62,7 @@ class TruthBot(commands.Bot):
                     # Add command information
                     embed.add_field(
                         name="Profile Information",
-                        value=f"`{BOT_PREFIX}profile @username` - View a user's profile information",
+                        value=f"`{BOT_PREFIX}truth-profile @username` - View a user's profile information",
                         inline=False
                     )
                     

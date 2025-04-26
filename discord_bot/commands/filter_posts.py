@@ -96,7 +96,7 @@ class FilterPostsCommand(TruthSocialCommand):
                 # Send filtered posts
                 for post in filtered_posts:
                     embed = discord.Embed(
-                        title=f"Post by {post.author.display_name}",
+                        title=f"Post by {post.user.display_name}",
                         description=post.content,
                         color=discord.Color.blue(),
                         timestamp=post.created_at

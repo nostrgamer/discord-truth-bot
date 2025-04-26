@@ -8,14 +8,25 @@ class Database:
     """Database manager for storing monitoring configurations."""
     
     def __init__(self, db_path: str = "data/monitoring.db"):
-        # Ensure data directory exists
-        os.makedirs(os.path.dirname(db_path), exist_ok=True)
         self.db_path = db_path
+        self.connection = None
+        # Only create directories if not using in-memory database
+        if db_path != ":memory:":
+            os.makedirs(os.path.dirname(db_path), exist_ok=True)
         self._init_db()
+    
+    def _get_connection(self):
+        """Get a database connection."""
+        if self.db_path == ":memory:":
+            if self.connection is None:
+                self.connection = sqlite3.connect(self.db_path)
+            return self.connection
+        return sqlite3.connect(self.db_path)
     
     def _init_db(self):
         """Initialize the database with required tables."""
-        with sqlite3.connect(self.db_path) as conn:
+        conn = self._get_connection()
+        try:
             cursor = conn.cursor()
             
             # Create monitoring_configs table
@@ -32,12 +43,24 @@ class Database:
             """)
             
             conn.commit()
+        finally:
+            if self.db_path != ":memory:" and conn:
+                conn.close()
     
     def add_monitoring_config(self, username: str, filter_keyword: str) -> int:
         """Add a new monitoring configuration."""
-        with sqlite3.connect(self.db_path) as conn:
+        conn = self._get_connection()
+        try:
             cursor = conn.cursor()
             
+            # First deactivate all existing configurations
+            cursor.execute("""
+                UPDATE monitoring_configs 
+                SET is_active = 0 
+                WHERE is_active = 1
+            """)
+            
+            # Then add the new configuration
             cursor.execute("""
                 INSERT INTO monitoring_configs 
                 (username, filter_keyword, created_at, is_active)
@@ -46,10 +69,14 @@ class Database:
             
             conn.commit()
             return cursor.lastrowid
+        finally:
+            if self.db_path != ":memory:" and conn:
+                conn.close()
     
     def get_monitoring_config(self) -> Optional[Dict[str, Any]]:
         """Get the current monitoring configuration."""
-        with sqlite3.connect(self.db_path) as conn:
+        conn = self._get_connection()
+        try:
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -71,10 +98,14 @@ class Database:
                     'is_active': bool(row[6])
                 }
             return None
+        finally:
+            if self.db_path != ":memory:" and conn:
+                conn.close()
     
     def update_last_checked(self, post_id: str, timestamp: str):
         """Update the last checked timestamp and post ID."""
-        with sqlite3.connect(self.db_path) as conn:
+        conn = self._get_connection()
+        try:
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -84,10 +115,14 @@ class Database:
             """, (timestamp, post_id))
             
             conn.commit()
+        finally:
+            if self.db_path != ":memory:" and conn:
+                conn.close()
     
     def deactivate_monitoring(self):
         """Deactivate the current monitoring configuration."""
-        with sqlite3.connect(self.db_path) as conn:
+        conn = self._get_connection()
+        try:
             cursor = conn.cursor()
             
             cursor.execute("""
@@ -97,8 +132,16 @@ class Database:
             """)
             
             conn.commit()
+        finally:
+            if self.db_path != ":memory:" and conn:
+                conn.close()
     
     def is_monitoring_active(self) -> bool:
         """Check if monitoring is currently active."""
         config = self.get_monitoring_config()
-        return config is not None and config['is_active'] 
+        return config is not None and config['is_active']
+    
+    def __del__(self):
+        """Clean up database connection."""
+        if self.connection:
+            self.connection.close() 

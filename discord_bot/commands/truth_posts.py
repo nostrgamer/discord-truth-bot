@@ -24,8 +24,8 @@ class TruthPostsCommand(TruthSocialCommand):
                 # Create embed for each post
                 for i, post in enumerate(posts.posts, 1):
                     embed = discord.Embed(
-                        title=f"Post {i} by {post.author.display_name}",
-                        url=f"https://truthsocial.com/@{post.author.username}/{post.id}",
+                        title=f"Post {i} by {post.user.display_name}",
+                        url=f"https://truthsocial.com/@{post.user.username}/{post.id}",
                         description=post.content,
                         color=discord.Color.blue(),
                         timestamp=post.created_at
