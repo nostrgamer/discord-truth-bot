@@ -15,12 +15,17 @@ class HelpCommand(commands.Cog):
         Usage: !help [command]
         Example: !help filter-posts
         """
+        # Get the bot's prefix
+        prefix = self.bot.command_prefix
+        if callable(prefix):
+            prefix = prefix(self.bot, ctx.message)
+        
         if command:
             # Show help for specific command
             cmd = self.bot.get_command(command)
             if cmd:
                 embed = discord.Embed(
-                    title=f"Command: {cmd.name}",
+                    title=f"Command: {prefix}{cmd.name}",
                     description=cmd.help or "No description available",
                     color=discord.Color.blue()
                 )
@@ -39,13 +44,13 @@ class HelpCommand(commands.Cog):
             for cmd in self.bot.commands:
                 if not cmd.hidden:
                     embed.add_field(
-                        name=f"!{cmd.name}",
+                        name=f"{prefix}{cmd.name}",
                         value=cmd.help.split('\n')[0] if cmd.help else "No description available",
                         inline=False
                     )
             
             # Add footer
-            embed.set_footer(text="Use !help <command> for more details")
+            embed.set_footer(text=f"Use {prefix}help <command> for more details")
             
             await ctx.send(embed=embed)
 

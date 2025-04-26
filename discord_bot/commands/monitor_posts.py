@@ -48,7 +48,7 @@ class MonitorPostsCommand(TruthSocialCommand):
                 # Send notifications for new posts
                 for post in new_posts:
                     embed = discord.Embed(
-                        title=f"New post by {post.author.display_name}",
+                        title=f"New post by {post.user.display_name}",
                         description=post.content,
                         color=discord.Color.green(),
                         timestamp=post.created_at

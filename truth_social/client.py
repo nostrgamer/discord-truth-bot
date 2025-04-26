@@ -101,7 +101,7 @@ class TruthSocialClient:
             post = Post(
                 id=post_data['id'],
                 content=post_data['content'],
-                author=author,  # Use the same author profile for all posts
+                user=author,
                 created_at=datetime.fromisoformat(post_data['created_at']),
                 likes_count=post_data['favourites_count'],
                 replies_count=post_data['replies_count'],
